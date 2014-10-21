@@ -1,0 +1,75 @@
+<div class="control">
+    <label>shadowColor<input type="text" value="#999999" onblur="onShadowColorChange(this)"></label>
+    <label>shadowOffsetX<input type="text" value="5" onblur="onShadowOffsetXChange(this)"></label>
+    <label>shadowOffsetY<input type="text" value="5" onblur="onShadowOffsetYChange(this)"></label>
+    <label>shadowBlur<input type="text" value="5" onblur="onShadowBlurChange(this)"></label>
+    <label>clip<input type="checkbox" onchange="onClipChange(this)"></label>
+</div>
+<canvas id="canvas" width="500" height="500" name="repeat"></canvas>
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+    var shadowColor = '#999999';
+    var shadowOffsetX = '5';
+    var shadowOffsetY = '5';
+    var shadowBlur = '5';
+    var clip = false;
+
+    drawRect();
+
+    function drawRect(){
+        ctx.clearRect( 0, 0, canvas.width, canvas.height );
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = 'lightblue';
+        ctx.strokeStyle = 'lightblue';
+        ctx.shadowColor = shadowColor;
+        ctx.shadowOffsetX = shadowOffsetX;
+        ctx.shadowOffsetY = shadowOffsetY;
+        ctx.shadowBlur = shadowBlur;
+        ctx.beginPath();
+        ctx.rect( canvas.width / 2 + 10, 20, ( canvas.width - 60 ) / 2, canvas.height - 40  );
+
+        ctx.save();
+        if( clip ){
+            ctx.clip();
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.rect( 20, 20, ( canvas.width - 60 ) / 2, canvas.height - 40 );
+
+        ctx.save();
+        if( clip ){
+            ctx.clip();
+        }
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function onShadowColorChange( ipt ){
+        shadowColor = ipt.value;
+        drawRect();
+    }
+
+    function onShadowOffsetXChange( ipt ){
+        shadowOffsetX = ipt.value;
+        drawRect();
+    }
+
+    function onShadowOffsetYChange( ipt ){
+        shadowOffsetY = ipt.value;
+        drawRect();
+    }
+
+    function onShadowBlurChange( ipt ){
+        shadowBlur = ipt.value;
+        drawRect();
+    }
+
+    function onClipChange( ipt ){
+        clip = !!ipt.checked;
+        console.log( clip );
+        drawRect();
+    }
+</script>

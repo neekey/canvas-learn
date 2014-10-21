@@ -1,0 +1,46 @@
+<canvas id="canvas" width="600" height="600" name="repeat"></canvas>
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+
+    ctx.strokeStyle = 'blue';
+    ctx.lineWidth = '1';
+    ctx.fillStyle = 'red';
+    ctx.font = '26 arial';
+
+    // stroke
+    ctx.strokeText( 'Stroke', 10, 50 );
+    ctx.strokeRect( 10, 70, 100, 100 );
+    ctx.arc( 60, 230, 50, 0, Math.PI * 3 / 2, false );
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc( 60, 340, 50, 0, Math.PI * 3 / 2, false );
+    ctx.closePath();
+    ctx.stroke();
+
+    // fill
+    ctx.fillText( 'Fill', 130, 50 );
+    ctx.fillRect( 130, 70, 100, 100 );
+    ctx.beginPath();
+    ctx.arc( 180, 230, 50, 0, Math.PI * 3 / 2, false );
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc( 180, 340, 50, 0, Math.PI * 3 / 2, false );
+    ctx.closePath();
+    ctx.fill();
+
+    // stroke & fill
+    ctx.fillText( 'Stroke & Fill ', 240, 50 );
+    ctx.strokeText( 'Stroke & Fill', 240, 50 );
+    ctx.fillRect( 240, 70, 100, 100 );
+    ctx.strokeRect( 240, 70, 100, 100 );
+    ctx.beginPath();
+    ctx.arc( 290, 230, 50, 0, Math.PI * 3 / 2, false );
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc( 290, 340, 50, 0, Math.PI * 3 / 2, false );
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+</script>

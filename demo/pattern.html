@@ -1,0 +1,39 @@
+<style>
+    .controls {
+        font-size: 24px;
+    }
+</style>
+
+<div class="controls">
+    <label>repeat<input onclick="radioClick(this)" checked="checked" type="radio" value="repeat" name="repeat"></label>
+    <label>repeat-x<input onclick="radioClick(this)" type="radio" value="repeat-x" name="repeat"></label>
+    <label>repeat-y<input onclick="radioClick(this)" type="radio" value="repeat-y" name="repeat"></label>
+    <label>no-repeat<input onclick="radioClick(this)" type="radio" value="no-repeat" name="repeat"></label>
+</div>
+
+
+<canvas id="canvas" width="1000" height="800" name="repeat"></canvas>
+
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+    var patternImage = new Image();
+
+    patternImage.onload = function(){
+        fillPattern( patternImage, 'repeat' );
+    };
+
+    patternImage.src = './images/pattern.png';
+
+    function fillPattern( pattern, repeat ){
+        ctx.fillStyle = ctx.createPattern( patternImage, repeat || 'repeat' );
+        ctx.clearRect( 0, 0, canvas.width, canvas.height );
+        ctx.fillRect( 0, 0, canvas.width, canvas.height );
+    }
+
+    function radioClick( radio ){
+        var repeat = radio.value;
+        fillPattern( patternImage, repeat );
+    }
+
+</script>
