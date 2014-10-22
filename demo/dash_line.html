@@ -1,0 +1,27 @@
+<canvas id="canvas" width="600" height="600" name="repeat"></canvas>
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+
+    function drawDashLine( ctx, x1, y1, x2, y2, dashLength ){
+        ctx.beginPath();
+        var deltaX = x2 - x1;
+        var deltaY = y2 - y1;
+        var dashNum = Math.floor( Math.sqrt( deltaX * deltaX + deltaY * deltaY ) ) / dashLength;
+        var segX = deltaX / dashNum;
+        var segY = deltaY / dashNum;
+
+        for( var i = 0; i < dashNum; i++ ){
+            if( i % 2 == 0 ){
+                ctx.moveTo( x1 + segX * i, y1 + segY * i );
+            }
+            else {
+                ctx.lineTo( x1 + segX * i, y1 + segY * i );
+            }
+        }
+
+        ctx.stroke();
+    }
+
+    drawDashLine( ctx, 50, 50, 550, 550, 5 );
+</script>
