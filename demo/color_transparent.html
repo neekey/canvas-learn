@@ -1,0 +1,42 @@
+<canvas id="canvas" width="500" height="500">your browser doesn't support canvas</canvas>
+
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+
+    var CANVAS_BG = 'lightyellow';
+    var RECT_MARGIN = 20;
+    var RECT_WIDTH = ( canvas.width - RECT_MARGIN * 3 ) / 2;
+    var RECT_HEIGHT = (canvas.height - RECT_MARGIN * 3 ) / 2;
+
+    var RECTS = {
+        RECT_RGB: { x: RECT_MARGIN, y: RECT_MARGIN, color: 'rgb( 125, 125, 125 )' },
+        RECT_RGBA: { x: canvas.width - RECT_MARGIN - RECT_WIDTH, y: RECT_MARGIN, color: 'rgba( 125, 125, 125, 0.5 )' },
+        RECT_HSL: { x: RECT_MARGIN, y: canvas.height - RECT_MARGIN - RECT_HEIGHT, color: 'hsl( 100, 100%, 80% )' },
+        RECT_HSLA: { x: canvas.width - RECT_MARGIN - RECT_WIDTH, y: canvas.height - RECT_MARGIN - RECT_HEIGHT, color: 'hsla( 100, 100%, 80%, 0.5 )' }
+    };
+
+    ctx.fillStyle = CANVAS_BG;
+    // 设置画布背景
+    ctx.fillRect( 0, 0, canvas.width, canvas.height );
+
+    ctx.font = '46px Helvetica';
+    ctx.fillStyle = '#333';
+    // 添加文字
+    ctx.fillText( 'click anywhere to erase', 10, 265 );
+
+    var rect;
+    var rectType;
+
+    for( rectType in RECTS ){
+        rect = RECTS[ rectType ];
+        ctx.fillStyle = rect.color;
+        ctx.fillRect( rect.x, rect.y, RECT_WIDTH, RECT_HEIGHT );
+    }
+
+    canvas.onclick = function(){
+        ctx.clearRect( 0, 0, canvas.width, canvas.height );
+    }
+
+
+</script>

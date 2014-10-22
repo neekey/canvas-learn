@@ -1,0 +1,33 @@
+<button id="clearRect">点击清除</button>
+
+<canvas id="canvas" width="500" height="500">your browser doesn't support canvas</canvas>
+
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+    var MARGIN = 20;
+    var STROKE_RECT_WIDTH = 50;
+    var STROKE_RECT_HEIGHT = 50;
+    ctx.strokeStyle = 'lightpink';
+    ctx.lineWidth = 5;
+
+    // 在 0.5px上画线
+    ctx.strokeRect( MARGIN + 0.5, MARGIN + 0.5, STROKE_RECT_WIDTH, STROKE_RECT_HEIGHT );
+
+    ctx.lineJoin = "round";
+    // 在 整数坐标上画线
+    ctx.strokeRect( MARGIN + STROKE_RECT_WIDTH + MARGIN, MARGIN, STROKE_RECT_WIDTH, STROKE_RECT_HEIGHT );
+
+    ctx.fillStyle = 'lightblue';
+    // 在 整数坐标上画线
+    ctx.fillRect( MARGIN*3 + STROKE_RECT_WIDTH*2, MARGIN, STROKE_RECT_WIDTH, STROKE_RECT_HEIGHT );
+
+    ctx.rect( MARGIN*4 + STROKE_RECT_WIDTH*3, MARGIN, STROKE_RECT_WIDTH, STROKE_RECT_HEIGHT);
+
+    ctx.fill();
+
+    // 添加按钮事件
+    document.getElementById( 'clearRect' ).onclick = function( e ){
+        ctx.clearRect( 0, 0, canvas.width, canvas.height );
+    };
+</script>

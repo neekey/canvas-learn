@@ -1,0 +1,117 @@
+<div class="controls">
+    <label>颜色：<input type="text" onblur="onColorChange(this.value)"></label>
+    <label>x间距：<input type="text" onblur="onStepXChange(this.value)"></label>
+    <label>y间距：<input type="text" onblur="onStepYChange(this.value)"></label>
+</div>
+<canvas id="canvas" width="600" height="600" name="repeat"></canvas>
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+    var color = '#cccccc';
+    var axesColor = 'blue';
+    var stepx = 10;
+    var stepy = 10;
+
+    function onColorChange( input ){
+        color = input;
+        drawGrid( ctx, color, stepx, stepy );
+        drawAxes( ctx, axesColor, 50, 50, 550, 550, stepx * 5 );
+    }
+
+    function onStepXChange( input ){
+        stepx = parseFloat( input );
+        drawGrid( ctx, color, stepx, stepy );
+        drawAxes( ctx, axesColor, 50, 50, 550, 550, stepx * 5 );
+    }
+
+    function onStepYChange( input ){
+        stepy = parseFloat( input );
+        drawGrid( ctx, color, stepx, stepy );
+        drawAxes( ctx, axesColor, 50, 50, 550, 550, stepx * 5 );
+    }
+
+    function drawGrid( ctx, color, stepx, stepy ){
+
+        ctx.clearRect( 0, 0, ctx.canvas.width, ctx.canvas.height );
+        var x;
+        var y;
+        ctx.strokeStyle = color;
+
+        // 先画垂直方向的线
+        for( x = stepx + 0.5; x <= ctx.canvas.width; x+= stepx ){
+
+            ctx.beginPath();
+            ctx.moveTo( x, 0 );
+            ctx.lineTo( x, canvas.height );
+            ctx.stroke();
+        }
+
+        for( y = stepy + 0.5; y <= ctx.canvas.height; y+= stepy ){
+            ctx.beginPath();
+            ctx.moveTo( 0, y );
+            ctx.lineTo( canvas.width, y );
+            ctx.stroke();
+        }
+    }
+
+    function drawAxes( ctx, color, originX, originY, maxX, maxY, axesGap ){
+
+        debugger;
+        var greaterX = originX < maxX ? maxX : originX;
+        var greaterY = originY < maxY ? maxY : originY;
+        var xStep = originX < maxX ? stepx : ( -1 ) * stepx;
+        var yStep = originY < maxY ? stepy : ( -1 ) * stepy;
+
+        var i;
+        var x;
+        var y;
+        var tipWidth = null;
+
+        ctx.strokeStyle = color;
+
+        // 绘制X轴
+        ctx.beginPath();
+        ctx.moveTo( originX, originY );
+        ctx.lineTo( maxX, originY );
+        ctx.stroke();
+
+        // 绘制X轴的轴线
+        for( i = 1; ( originX + i * xStep ) < greaterX; i++ ){
+            if( i % axesGap == 0 ){
+                tipWidth = stepy;
+            }
+            else {
+                tipWidth = stepy / 2;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo( ( originX + i * xStep ), originY - tipWidth );
+            ctx.lineTo( ( originX + i * xStep ), originY + tipWidth );
+            ctx.stroke();
+        }
+
+        // 绘制Y轴
+        ctx.beginPath();
+        ctx.moveTo( originX, originY );
+        ctx.lineTo( originY, maxY );
+        ctx.stroke();
+
+        // 绘制Y轴的轴线
+        for( i = 1; ( originY + i * yStep ) < greaterY; i++ ){
+            if( i % axesGap   == 0 ){
+                tipWidth = stepx;
+            }
+            else {
+                tipWidth = stepx / 2;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo( originX - tipWidth, ( originY + i * yStep ) );
+            ctx.lineTo( originX + tipWidth, ( originY + i * yStep )  );
+            ctx.stroke();
+        }
+    }
+
+    drawGrid( ctx, color, stepx, stepy );
+    drawAxes( ctx, axesColor, 50, 50, 550, 550, 5 );
+</script>

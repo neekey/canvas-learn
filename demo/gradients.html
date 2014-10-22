@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Gradients</title>
+</head>
+<body>
+<canvas id="canvas" width="600" height="600">your browser doesn't support canvas</canvas>
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+
+    // 线性渐变
+    var LINEAR_RECT = {
+        x: 0,
+        y: 0,
+        width: 200,
+        height: 200
+    };
+
+    // 两个原点不在一起的渐变
+    var RADIAL = {
+        x: 300,
+        y: 0,
+        width: 200,
+        height: 200,
+        top_x: 400,
+        top_y: 50,
+        top_radius: 10,
+        bottom_x: 400,
+        bottom_y: 150,
+        bottom_radius: 50
+    };
+
+    // 两个原点不在一起的渐变
+    var RADIAL_REVERSE = {
+        x: 300,
+        y: 300,
+        width: 200,
+        height: 200,
+        top_x: 400,
+        top_y: 350,
+        top_radius: 50,
+        bottom_x: 400,
+        bottom_y: 450,
+        bottom_radius: 10
+    };
+
+    // 正圆渐变
+    var RADIAL_CIRCLE = {
+        x: 100,
+        y: 450,
+        top_x: 100,
+        top_y: 450,
+        top_radius: 0,
+        bottom_x: 100,
+        bottom_y: 450,
+        bottom_radius: 100
+    };
+
+    var gradient = ctx.createLinearGradient( 0, LINEAR_RECT.y, 0, LINEAR_RECT.y + LINEAR_RECT.height );
+    gradient.addColorStop( 0, 'red' );
+    gradient.addColorStop( 0.33, 'lightgreen' );
+    gradient.addColorStop( 0.66, 'lightblue' );
+    gradient.addColorStop( 0.99, 'red' );
+    ctx.fillStyle = gradient;
+    ctx.fillRect( LINEAR_RECT.x, LINEAR_RECT.y, LINEAR_RECT.width, LINEAR_RECT.height );
+
+    var radialGradient = ctx.createRadialGradient( RADIAL.top_x, RADIAL.top_y, RADIAL.top_radius, RADIAL.bottom_x, RADIAL.bottom_y, RADIAL.bottom_radius );
+    radialGradient.addColorStop( 0, 'red' );
+    radialGradient.addColorStop( 0.33, 'lightgreen' );
+    radialGradient.addColorStop( 0.66, 'lightblue' );
+    radialGradient.addColorStop( 0.99, 'red' );
+    ctx.fillStyle = radialGradient;
+    ctx.fillRect( RADIAL.x, RADIAL.y, RADIAL.width, RADIAL.height );
+
+    var radialReverseGradient = ctx.createRadialGradient(
+            RADIAL_REVERSE.top_x,
+            RADIAL_REVERSE.top_y,
+            RADIAL_REVERSE.top_radius,
+            RADIAL_REVERSE.bottom_x,
+            RADIAL_REVERSE.bottom_y,
+            RADIAL_REVERSE.bottom_radius
+    );
+    radialReverseGradient.addColorStop( 0, 'red' );
+    radialReverseGradient.addColorStop( 0.33, 'lightgreen' );
+    radialReverseGradient.addColorStop( 0.66, 'lightblue' );
+    radialReverseGradient.addColorStop( 0.99, 'red' );
+    ctx.fillStyle = radialReverseGradient;
+    ctx.fillRect( RADIAL_REVERSE.x, RADIAL_REVERSE.y, RADIAL_REVERSE.width, RADIAL_REVERSE.height );
+
+    var circleGradient = ctx.createRadialGradient(
+            RADIAL_CIRCLE.top_x,
+            RADIAL_CIRCLE.top_y,
+            RADIAL_CIRCLE.top_radius,
+            RADIAL_CIRCLE.bottom_x,
+            RADIAL_CIRCLE.bottom_y,
+            RADIAL_CIRCLE.bottom_radius );
+    circleGradient.addColorStop( 0, 'red' );
+    circleGradient.addColorStop( 0.33, 'lightgreen' );
+    circleGradient.addColorStop( 0.66, 'lightblue' );
+    circleGradient.addColorStop( 0.99, 'red' );
+    ctx.fillStyle = circleGradient;
+    ctx.arc( RADIAL_CIRCLE.x, RADIAL_CIRCLE.y, RADIAL_CIRCLE.bottom_radius, 0, Math.PI * 2 );
+    ctx.fill();
+
+</script>
+</body>
+</html>
