@@ -1,0 +1,134 @@
+<canvas id="canvas" width="600" height="600">your browser doesn't support canvas</canvas>
+<script src="../lib/index.js"></script>
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+
+    var DIAL_OUTER_RADIUS = 250;
+    var DIAL_INNER_RADIUS = 220;
+    var TICK_RING_RADIUS = 200;
+    var TICK_WIDTH = DIAL_INNER_RADIUS - TICK_RING_RADIUS;
+    var INNER_CIRCLE_RADIUS = 20;
+    var GUIDE_WIRE_CIRCLE_RADIUS = 10;
+    var GUIDE_WIRE_LEN = 250;
+    var DIVIDE = 32;
+    var SUB_DIVIDE = 4;
+    var TOTAL_DIVIDE = DIVIDE * SUB_DIVIDE;
+    var CENTER_X = canvas.width / 2;
+    var CENTER_Y = canvas.height / 2;
+    var GUIDE_WARE_COUNTER = 0;
+
+    function draw(){
+        requestAnimationFrame( draw, canvas );
+        ctx.clearRect( 0, 0, canvas.width, canvas.height );
+        drawGrids();
+        drawDialGauges();
+    }
+
+    draw();
+
+    function drawDialGauges(){
+
+        ctx.save();
+        ctx.shadowColor = '#999';
+        ctx.shadowOffsetX = 5;
+        ctx.shadowOffsetY = 5;
+        ctx.shadowBlur = 20;
+
+        drawDialCircleRing();
+        drawTickRing();
+        drawTicks();
+        drawGuideWire();
+        drawInnerCircle();
+
+        ctx.restore();
+    }
+
+    function drawGrids(){
+        Utils.drawGrid( ctx, '#ccc', 10, 10 );
+    }
+
+    function drawDialCircleRing(){
+        ctx.save();
+        ctx.fillStyle = 'rgba(80,190,240,0.6)';
+        ctx.strokeStyle = 'lightblue';
+        Utils.fillRing( ctx, CENTER_X, CENTER_Y, DIAL_INNER_RADIUS, DIAL_OUTER_RADIUS );
+        Utils.strokeRing( ctx, CENTER_X, CENTER_Y, DIAL_INNER_RADIUS, DIAL_OUTER_RADIUS );
+        ctx.restore();
+    }
+
+    function drawTicks(){
+        var angleStep = Math.PI * 2 / TOTAL_DIVIDE;
+
+        for( var index = 0; index <= TOTAL_DIVIDE; index++ ){
+            drawTick( ctx, angleStep * index, DIAL_INNER_RADIUS, index );
+        }
+    }
+
+    function drawTick( ctx, angle, radius, index ){
+        ctx.save();
+        ctx.beginPath();
+        var tickWidth = index % SUB_DIVIDE == 0 ? TICK_WIDTH : TICK_WIDTH / 2;
+        ctx.moveTo( radius * Math.cos( angle ) + CENTER_X,radius * Math.sin( angle ) + CENTER_Y );
+        ctx.lineTo( ( radius - tickWidth ) * Math.cos( angle ) + CENTER_X, ( radius - tickWidth ) * Math.sin( angle ) + CENTER_Y );
+        ctx.strokeStyle = '#999';
+        ctx.stroke();
+
+        if( index % ( 2 * SUB_DIVIDE ) == 0 ){
+            drawAnnotation( 360 / TOTAL_DIVIDE * index, ( radius - tickWidth - 20 ) * Math.cos( angle ) + CENTER_X, ( radius - tickWidth - 20 ) * Math.sin( angle ) + CENTER_Y );
+        }
+        ctx.restore();
+    }
+
+    function drawTickRing(){
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = '#999';
+        ctx.arc( CENTER_X, CENTER_Y, TICK_RING_RADIUS, 0, 2 * Math.PI );
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawInnerCircle(){
+        ctx.save();
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(17, 189, 203, 0.5)';
+        ctx.strokeStyle = 'lightblue';
+        ctx.arc( CENTER_X, CENTER_Y, INNER_CIRCLE_RADIUS, 0, 2 * Math.PI );
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawGuideWire(){
+
+        ctx.save();
+        ctx.beginPath();
+        GUIDE_WARE_COUNTER++;
+
+        if( GUIDE_WARE_COUNTER == TOTAL_DIVIDE * 1 ){
+            GUIDE_WARE_COUNTER = 0;
+        }
+
+        var angle = Math.PI * 2 / ( TOTAL_DIVIDE * 1 ) * GUIDE_WARE_COUNTER;
+
+        ctx.moveTo( CENTER_X, CENTER_Y );
+        ctx.lineTo( CENTER_X + GUIDE_WIRE_LEN * Math.cos( angle ), CENTER_Y + GUIDE_WIRE_LEN * Math.sin( angle ) );
+        ctx.strokeStyle = '#666';
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc( CENTER_X + GUIDE_WIRE_LEN * Math.cos( angle ), CENTER_X + GUIDE_WIRE_LEN * Math.sin( angle ), GUIDE_WIRE_CIRCLE_RADIUS, 0, Math.PI * 2 );
+        ctx.fillStyle = 'orange';
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function drawAnnotation( angle, x, y ){
+
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText( angle, x, y );
+        ctx.restore();
+    }
+</script>
