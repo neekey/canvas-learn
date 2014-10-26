@@ -1,0 +1,254 @@
+<style>
+    #canvas {
+        cursor: pointer;
+    }
+</style>
+
+<div class="controls">
+    <label>Stroke:
+        <select onchange="strokeStyle=this.value">
+            <option value="blue">blue</option>
+            <option value="green">green</option>
+            <option value="red">red</option>
+        </select>
+    </label>
+    <label>Fill:
+        <select onchange="fillStyle=this.value">
+            <option value="lightblue">lightblue</option>
+            <option value="lightgreen">lightgreen</option>
+            <option value="yellow">yellow</option>
+            <option value="pink">pink</option>
+            <option value="orange">orange</option>
+        </select>
+    </label>
+    <label>边数:
+        <select onchange="polygonSize=this.value">
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+        </select>
+    </label>
+    <label>Guidewires: <input type="checkbox" checked="checked" onchange="onGuidewiresChange(this.checked)"></label>
+    <label>Edit: <input type="checkbox" onchange="edit = !edit"></label>
+    <button onclick="eraseAll()">erase all</button>
+</div>
+<canvas id="canvas" width="600" height="600" name="repeat"></canvas>
+<script src="../lib/index.js"></script>
+<script>
+    var canvas = document.getElementById( 'canvas' );
+    var ctx = canvas.getContext( '2d' );
+    var strokeStyle = 'blue';
+    var fillStyle = 'lightblue';
+    var showGuidewires = true;
+    var canvasImageData = null;
+    var dragging = false;
+    var mousedown = {};
+    var rect = {};
+    var polygonSize = 3;
+    var polygons = [];
+    var edit = false;
+    var currentPolygon = null;
+    var originPolygonX = null;
+    var originPolygonY = null;
+
+    // 绘制网格
+    function drawGrid(){
+        Utils.drawGrid( ctx, '#ccc', 10, 10 );
+    }
+
+    // 擦除全部
+    function eraseAll(){
+        ctx.clearRect( 0, 0, canvas.width, canvas.height );
+        drawGrid();
+        saveDrawingSurface();
+    }
+
+    // 是否显示参考线
+    function onGuidewiresChange( show ){
+        showGuidewires = show;
+    }
+
+    // 绘制参考线
+    function drawGuideWires( loc ){
+        if( showGuidewires ){
+            var x = loc.x;
+            var y = loc.y;
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo( x, 0 );
+            ctx.lineTo( x, canvas.height );
+            ctx.moveTo( 0, y );
+            ctx.lineTo( canvas.width, y );
+            ctx.strokeStyle = 'lightblue';
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+
+    // 保存rect信息
+    function saveRect( loc ){
+        var x = loc.x;
+        var y = loc.y;
+        if( x < mousedown.x ){
+            rect.x = x;
+        }
+        else {
+            rect.x = mousedown.x;
+        }
+
+        if( y < mousedown.y ){
+            rect.y = y;
+        }
+        else {
+            rect.y = mousedown.y;
+        }
+
+        rect.width = Math.abs( x - mousedown.x );
+        rect.height = Math.abs( y - mousedown.y );
+    }
+
+    // 绘制直线
+    function drawRectShape( loc ){
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = strokeStyle;
+        ctx.fillStyle = fillStyle;
+        ctx.globalAlpha = 0.5;
+        var radius = Math.sqrt( Math.pow( loc.x - mousedown.x, 2 ) + Math.pow( loc.y - mousedown.y, 2 ) );
+        var startAngle = Math.atan2(  loc.y - mousedown.y, loc.x - mousedown.x );
+        var angleStep = Math.PI * 2 / polygonSize;
+
+        for( var index = 0; index <= polygonSize; index++ ){
+
+            ctx[ index == 0 ? 'moveTo' : 'lineTo' ](
+                mousedown.x + radius * Math.cos( startAngle +  index * angleStep ),
+                mousedown.y + radius * Math.sin( startAngle +  index * angleStep )
+            );
+        }
+
+        currentPolygon = new CanvasObjects.polygon( ctx, {
+            x: mousedown.x,
+            y: mousedown.y,
+            sides: polygonSize,
+            radius: radius,
+            startAngle: startAngle,
+            styles: {
+                strokeStyle: strokeStyle,
+                fillStyle: fillStyle,
+                globalAlpha: ctx.globalAlpha
+            }
+        });
+
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function drawPolygons(){
+        polygons.forEach( function( polygon ){
+            polygon.fill();
+            polygon.stroke();
+        });
+    }
+
+    // 保存当前画布状态
+    function saveDrawingSurface(){
+        canvasImageData = ctx.getImageData( 0, 0, canvas.width, canvas.height );
+    }
+
+    // 恢复画布状态
+    function restoreDrawingSurface(){
+        ctx.putImageData( canvasImageData, 0, 0 );
+    }
+
+    // 鼠标按下，开始拖动
+    // 1、记录当前的画布状态
+    // 2、标记拖动标记
+    canvas.onmousedown = function( e ){
+
+        var loc = Utils.windowToCanvas( canvas, e.clientX, e.clientY );
+        mousedown = loc;
+        dragging = true;
+        currentPolygon = null;
+
+        if( edit ){
+            polygons.forEach(function( polygon ){
+                if( polygon.isPointInPath( loc.x, loc.y ) ){
+                    currentPolygon = polygon;
+                    originPolygonX = polygon.x;
+                    originPolygonY = polygon.y;
+                }
+            });
+
+            if( currentPolygon ){
+                ctx.clearRect( 0, 0, canvas.width, canvas.height );
+                drawGrid();
+                drawPolygons();
+            }
+        }
+        else {
+            saveDrawingSurface();
+        }
+    };
+
+    // 鼠标移动，若处于拖拽状态
+    // 1、恢复画布状态
+    // 2、保存rect信息
+    // 3、绘制线段
+    // 4、绘制参考线
+    canvas.onmousemove = function( e ){
+
+        if( dragging ){
+            var loc = Utils.windowToCanvas( canvas, e.clientX, e.clientY );
+
+            if( edit && currentPolygon ){
+
+                currentPolygon.x = originPolygonX + loc.x - mousedown.x;
+                currentPolygon.y = originPolygonY + loc.y - mousedown.y;
+
+                ctx.clearRect( 0, 0, canvas.width, canvas.height );
+                drawGrid();
+                drawPolygons();
+            }
+            else {
+                restoreDrawingSurface();
+                saveRect( loc );
+                drawRectShape( loc );
+            }
+
+            drawGuideWires( loc );
+        }
+
+    };
+
+    // 鼠标抬起，结束拖拽，并保存绘制的内容
+    // 1、恢复画布
+    // 2、进行最后一次绘制
+    // 3、保存画布
+    canvas.onmouseup = function( e ){
+        restoreDrawingSurface();
+        var loc = Utils.windowToCanvas( canvas, e.clientX, e.clientY );
+        saveRect( loc );
+
+        if( !edit ){
+            drawRectShape( loc );
+            // 添加 polygon
+            polygons.push( currentPolygon );
+        }
+        else {
+            ctx.clearRect( 0, 0, canvas.width, canvas.height );
+            drawGrid();
+            drawPolygons();
+        }
+
+        saveDrawingSurface();
+        dragging = false;
+    };
+
+    drawGrid();
+    saveDrawingSurface();
+
+</script>
